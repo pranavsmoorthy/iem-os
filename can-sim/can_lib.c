@@ -74,8 +74,8 @@ bool can_lib_tx(const CANMsg_t* msg, uint32_t block_time) {
     frame.can_dlc = msg->length;
 
     // Guard against payloads larger than classic CAN limit
-    uint8_t copy_len = (msg->length > can_lib_CAN_CLASSIC_DATA_MAX)
-                           ? can_lib_CAN_CLASSIC_DATA_MAX
+    uint8_t copy_len = (msg->length > )
+                           ? CAN_LIB_CAN_CLASSIC_DATA_MAX
                            : msg->length;
     memcpy(frame.data, msg->data, copy_len);
 
