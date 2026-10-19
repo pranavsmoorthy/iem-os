@@ -8,7 +8,7 @@ SRCS = can-sim/main.c can-sim/can_1.c
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS)
+	$(CC) $(CFLAGS) -o bin/$(TARGET) $(SRCS)
 
 clean:
 	rm -f $(TARGET)
