@@ -118,7 +118,7 @@ int main(void) {
     printf("=========================================\n\n");
 
     // Initialize the CAN transport layer (SocketCAN)
-    if (!canlib_init(CAN_INTERFACE)) {
+    if (!can_lib_init(CAN_INTERFACE)) {
         fprintf(stderr, "Failed to initialize CAN interface %s\n", CAN_INTERFACE);
         return EXIT_FAILURE;
     }
@@ -161,8 +161,8 @@ int main(void) {
             fprintf(stderr, "Warning: Failed to pack safety_status message\n");
         }
 
-        // Transmit using IEM canlib
-        if (!canlib_tx(&msg, 0)) {
+        // Transmit using IEM can_lib
+        if (!can_lib_tx(&msg, 0)) {
             fprintf(stderr, "Warning: Failed to transmit CAN frame\n");
         }
 
@@ -179,7 +179,7 @@ int main(void) {
 
     // Clean teardown upon exit
     printf("\nStopping simulation...\n");
-    canlib_deinit();
+    can_lib_deinit();
 
     return EXIT_SUCCESS;
 }
