@@ -5,8 +5,8 @@
 #include <time.h>
 #include <string.h>
 
-#include "can_sim/can_types.h"
-#include "can_sim/can_lib.h"
+#include "can/can_types.h"
+#include "can/can_lib.h"
 #include "can_1.h"
 
 #define CAN_INTERFACE "vcan0"
