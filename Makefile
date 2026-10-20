@@ -1,6 +1,10 @@
 CC ?= gcc
 
-CFLAGS ?= -Wall -Wextra -O2 -Iinclude -Iinclude/can -Ican-sim/codec/can_1
+# Include search paths:
+# -Iinclude: gives access to can_sim/can_lib.h, can_sim/can_types.h, and linux/
+# -Iinclude/can_sim: allows can_lib.h to include can_types.h directly
+# -Ican-sim/codec/can_1: gives access to can_1.h
+CFLAGS ?= -Wall -Wextra -O2 -Iinclude -Iinclude/can_sim -Ican-sim/codec/can_1
 
 TARGET = can_sim
 BINDIR = bin
