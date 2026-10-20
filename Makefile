@@ -1,22 +1,37 @@
 CC ?= gcc
 
 # Include search paths:
-# -Iinclude: gives access to can_sim/can_lib.h, can_sim/can_types.h, and linux/
-# -Iinclude/can_sim: allows can_lib.h to include can_types.h directly
-# -Ican-sim/codec/can_1: gives access to can_1.h
-CFLAGS ?= -Wall -Wextra -O2 -Iinclude -Iinclude/can_sim -Ican-sim/codec/can_1
+# -Iinclude: gives access to can_types.h, can_sim/can_lib.h, can_read/..., and linux/
+# -Icodec/can_1: gives access to can_1.h
+CFLAGS ?= -Wall -Wextra -O2 -Iinclude -Icodec/can_1
 
-TARGET = can_sim
 BINDIR = bin
-SRCS = can-sim/main.c \
-       can-sim/can_lib.c \
-       can-sim/codec/can_1/can_1.c
 
-all: $(BINDIR)/$(TARGET)
+CAN_SIM_TARGET = $(BINDIR)/can_sim
+CAN_SIM_SRCS   = can-sim/main.c \
+                 can-sim/can_lib.c \
+                 codec/can_1/can_1.c
 
-$(BINDIR)/$(TARGET): $(SRCS)
+CAN_READ_TARGET = $(BINDIR)/can_read
+CAN_READ_SRCS   = can-read/main.c \
+                  can-read/can_rx.c \
+                  can-read/decoder.c \
+                  can-read/metrics.c \
+                  codec/can_1/can_1.c
+
+all: can_sim can_read
+
+can_sim: $(CAN_SIM_TARGET)
+
+$(CAN_SIM_TARGET): $(CAN_SIM_SRCS)
 	@mkdir -p $(BINDIR)
-	$(CC) $(CFLAGS) -o $(BINDIR)/$(TARGET) $(SRCS)
+	$(CC) $(CFLAGS) -o $(CAN_SIM_TARGET) $(CAN_SIM_SRCS)
+
+can_read: $(CAN_READ_TARGET)
+
+$(CAN_READ_TARGET): $(CAN_READ_SRCS)
+	@mkdir -p $(BINDIR)
+	$(CC) $(CFLAGS) -o $(CAN_READ_TARGET) $(CAN_READ_SRCS)
 
 # Bring up virtual CAN
 vcan-up:
@@ -33,4 +48,4 @@ vcan-down:
 clean:
 	rm -rf $(BINDIR)
 
-.PHONY: all clean vcan-up vcan-down
+.PHONY: all can_sim can_read clean vcan-up vcan-down

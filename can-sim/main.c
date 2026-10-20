@@ -5,7 +5,7 @@
 #include <time.h>
 #include <string.h>
 
-#include "can_sim/can_types.h"
+#include "can_types.h"
 #include "can_sim/can_lib.h"
 #include "can_1.h"
 
