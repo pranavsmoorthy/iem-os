@@ -3,7 +3,7 @@ CC ?= gcc
 # Include search paths:
 # -Iinclude: gives access to can_types.h, can_sim/can_lib.h, can_read/..., and linux/
 # -Icodec/can_1: gives access to can_1.h
-CFLAGS ?= -Wall -Wextra -O2 -Iinclude -Icodec/can_1
+CFLAGS ?= -Wall -Wextra -O2 -Iinclude -Icodec/can_1 -Icodec/can_2 -Icodec/can_3
 
 BINDIR = bin
 
