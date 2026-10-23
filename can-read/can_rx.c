@@ -12,11 +12,21 @@
 #include <linux/can/raw.h>
 
 static int g_sock = -1;
+static CANBus_e g_bus = CAN_1;
+
+void can_rx_set_bus(CANBus_e bus) {
+    g_bus = bus;
+}
+
+CANBus_e can_rx_get_bus(void) {
+    return g_bus;
+}
 
 /**
  * Create a new socket to read
  */
-bool can_rx_init(const char *iface_name) {
+bool can_rx_init(const char *iface_name, CANBus_e bus) {
+    g_bus = bus;
     // Check if the interface name is not null
     if (iface_name == NULL) {
         return false;
@@ -114,7 +124,7 @@ CanRxStatus_e can_rx_recv(CANMsg_t *out_msg) {
     }
 
     out_msg->length = frame.can_dlc;
-    out_msg->bus = CAN_1;
+    out_msg->bus = g_bus;
 
     uint8_t copy_len = (frame.can_dlc > CAN_LIB_CAN_CLASSIC_DATA_MAX)
                            ? CAN_LIB_CAN_CLASSIC_DATA_MAX

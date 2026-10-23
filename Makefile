@@ -17,7 +17,9 @@ CAN_READ_SRCS   = can-read/main.c \
                   can-read/can_rx.c \
                   can-read/decoder.c \
                   can-read/metrics.c \
-                  codec/can_1/can_1.c
+                  codec/can_1/can_1.c \
+                  codec/can_2/can_2.c \
+                  codec/can_3/can_3.c
 
 all: can_sim can_read
 

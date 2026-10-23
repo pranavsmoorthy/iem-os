@@ -23,27 +23,52 @@ static void signal_handler(int signum) {
  * Prints the usage details for the CAN reader
  */
 static void print_usage(const char *prog_name) {
-    printf("Usage: %s [interface]\n", prog_name);
+    printf("Usage: %s [interface] [bus]\n", prog_name);
     printf("  interface: CAN network interface (default: %s)\n", DEFAULT_CAN_INTERFACE);
+    printf("  bus:       Optional CAN bus: 1, 2, 3, or all (default: auto-detected from interface)\n");
     printf("Examples:\n");
-    printf("  %s vcan0    # Virtual CAN testing\n", prog_name);
-    printf("  %s can0     # Physical car bus\n", prog_name);
+    printf("  %s vcan0        # Virtual CAN testing (auto-detects CAN_1)\n", prog_name);
+    printf("  %s can0 1       # Physical car bus (CAN_1: Safety, BMS)\n", prog_name);
+    printf("  %s can1 2       # Physical car bus (CAN_2: VNAV, TV, Sensors)\n", prog_name);
+    printf("  %s can2 3       # Physical car bus (CAN_3: AMK Inverters)\n", prog_name);
+    printf("  %s vcan0 all    # Decode frames across all codecs\n", prog_name);
 }
 
 int main(int argc, char *argv[]) {
     // Initialize with the default CAN interface
     const char *iface = DEFAULT_CAN_INTERFACE;
 
-    // If check if the arguments count is greater than 1, 
-    // if the help flag is put in. If help is put in, put 
-    // the usage details. Otherwise, check the CAN input 
-    // passed in
+    // Check if the help flag is passed or interface is provided
     if (argc > 1) {
         if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
             print_usage(argv[0]);
             return EXIT_SUCCESS;
         }
         iface = argv[1];
+    }
+
+    // Determine target CAN bus (auto-detect from interface name)
+    CANBus_e bus = CAN_1;
+    if (strstr(iface, "1") != NULL) {
+        bus = CAN_2;
+    } else if (strstr(iface, "2") != NULL) {
+        bus = CAN_3;
+    }
+
+    // Explicit override if bus argument is passed
+    if (argc > 2) {
+        if (strcmp(argv[2], "1") == 0 || strcasecmp(argv[2], "can1") == 0) {
+            bus = CAN_1;
+        } else if (strcmp(argv[2], "2") == 0 || strcasecmp(argv[2], "can2") == 0) {
+            bus = CAN_2;
+        } else if (strcmp(argv[2], "3") == 0 || strcasecmp(argv[2], "can3") == 0) {
+            bus = CAN_3;
+        } else if (strcasecmp(argv[2], "all") == 0 || strcasecmp(argv[2], "any") == 0) {
+            bus = CAN_BUS_MAX;
+        } else {
+            fprintf(stderr, "can_read: Unknown bus '%s'. Use 1, 2, 3, or all.\n", argv[2]);
+            return EXIT_FAILURE;
+        }
     }
 
     // Ensures SA_RESTART is not set, guaranteeing that if 
@@ -67,13 +92,16 @@ int main(int argc, char *argv[]) {
     // Enable metrics
     metrics_init();
 
-    // Try to initialize the CAN interface with the given
-    if (!can_rx_init(iface)) {
+    // Try to initialize the CAN interface with the given bus
+    if (!can_rx_init(iface, bus)) {
         fprintf(stderr, "can_read: Failed to initialize CAN interface '%s'\n", iface);
         return EXIT_FAILURE;
     }
 
-    printf("can_read: Listening on '%s'\n\n", iface);
+    const char *bus_str = (bus == CAN_1) ? "CAN_1" :
+                          (bus == CAN_2) ? "CAN_2" :
+                          (bus == CAN_3) ? "CAN_3" : "ALL";
+    printf("can_read: Listening on '%s' [Bus: %s] (press Ctrl+C to terminate)...\n\n", iface, bus_str);
 
     while (g_running) {
         CANMsg_t msg;

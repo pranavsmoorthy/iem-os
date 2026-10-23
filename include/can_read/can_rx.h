@@ -14,9 +14,11 @@ typedef enum {
 } CanRxStatus_e;
 
 /**
- * Create a new socket to read
+ * Create a new socket to read from the specified interface and bus
  */
-bool can_rx_init(const char *iface_name);
+bool can_rx_init(const char *iface_name, CANBus_e bus);
+void can_rx_set_bus(CANBus_e bus);
+CANBus_e can_rx_get_bus(void);
 
 /**
  * Read off the kernel input buffer and translate the CAN 
